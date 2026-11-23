@@ -16,3 +16,6 @@ Automated customer message triage workflow built in n8n for Brew & Bean.
 
 ## Testing
 Send POST requests to http://localhost:5678/webhook/brew-bean-triage with JSON body {"name": "...", "message": "..."} covering Order, Complaint, and Info messages.
+
+## Known Limitations
+- The error-handling Write File to Disk node currently uses a local Windows file path (C:/Users/THE GOAT/.n8n-files/error_logs.json). Update the File Path and Name field in the Write File to Disk node to match your local n8n directory when running on another machine.
