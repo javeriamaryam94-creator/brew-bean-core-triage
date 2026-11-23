@@ -1,12 +1,1 @@
-[
-  {
-    "timestamp": "2026-11-23T19:02:54.000Z",
-    "workflow": "Brew & Bean Core Triage",
-    "node": "AI Agent",
-    "error": "The resource you are requesting could not be found",
-    "input": {
-      "name": "Sara",
-      "message": "Hi! Can I get 2 Caramel Lattes and 1 Blueberry Muffin please?"
-    }
-  }
-]
+[{"timestamp":"2026-11-23T16:18:52.573Z","customer":"Test2","message":"Order 2 muffins","error":"Authorization failed - please check your credentials"}]
