@@ -11,10 +11,153 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.2,
       "position": [
-        384,
-        480
+        16,
+        0
       ],
-      "id": "9709355d-f46b-40de-bf6a-111248e7a88f",
+      "id": "d1c4d5f6-59bf-49cf-8180-dddee8ad95f5",
+      "name": "Webhook",
+      "webhookId": "147b5fa9-71c6-4d99-bd81-9a14cd5a49bf"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Customer Name: {{ $json.body.name }}\nMessage: {{ $json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the customer triage assistant for Brew & Bean coffee shop.\nClassify the customer's message strictly as \"Order\", \"Complaint\", or \"Info\".\n- If \"Order\", extract all ordered items and quantities into the \"items\" array.\n- If \"Complaint\" or \"Info\", return an empty array [] for \"items\".\nReturn valid JSON matching the required schema only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "60342004-931f-4894-b9f2-6fb6adf9c360",
+      "name": "AI Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        192
+      ],
+      "id": "13d338f4-d425-405f-aa9b-773d0d34ae4f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      timestamp: new Date().toISOString(),\n      customer: $('Webhook').first().json.body?.name || 'Unknown',\n      message: $('Webhook').first().json.body?.message || '',\n      error: $input.first().json.error || 'AI Agent failed to process request'\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "7a9a36a5-a359-4c1e-9a5c-014932fd4d02",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "910f6494-baa6-4e42-8163-8d3ec769603e",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:/Users/THE GOAT/.n8n-files/error_logs.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "0f242039-85de-4019-99dd-07928941f326",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"error\",\"message\":\"Request logged\"}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "a2d30464-504c-4156-be32-9478db05bd25",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"category\": \"Order\", \"items\": [{\"item\": \"Caramel Latte\", \"quantity\": 2}]}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        208
+      ],
+      "id": "71d77476-2f12-41d2-9610-8f38a6ddb916",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        240,
+        208
+      ],
+      "id": "3d125f0b-eacd-431b-bffe-7b2980afd1d3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "MWbAJyatCliTzRKq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "brew-bean-triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        560
+      ],
+      "id": "0df51e6f-0f81-4113-a814-cbd74a27e8b8",
       "name": "Webhook1",
       "webhookId": "147b5fa9-71c6-4d99-bd81-9a14cd5a49bf"
     },
@@ -30,10 +173,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        608,
-        480
+        1520,
+        560
       ],
-      "id": "b0a221bb-a317-46c8-abf9-f80c12e9a544",
+      "id": "ef7b6ab2-d3b1-46a0-973d-3d45d66d1d25",
       "name": "AI Agent1",
       "onError": "continueErrorOutput"
     },
@@ -46,57 +189,52 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        960,
-        576
+        1280,
+        752
       ],
-      "id": "e1954704-e896-4a54-93ae-328601053461",
+      "id": "b331e3cb-2426-41e8-aeb6-cc9f693985ed",
       "name": "Respond to Webhook2"
     },
     {
       "parameters": {
-        "jsCode": "return [{\n  json: {\n    timestamp: new Date().toISOString(),\n    customer: $('Webhook1').first().json.body?.name || 'Unknown',\n    message: $('Webhook1').first().json.body?.message || '',\n    error: $input.first().json.error || 'AI Agent failed to process request'\n  }\n}];"
+        "jsCode": "return [\n  {\n    json: {\n      timestamp: new Date().toISOString(),\n      customer: $('Webhook1').first().json.body?.name || 'Unknown',\n      message: $('Webhook1').first().json.body?.message || '',\n      error: $input.first().json.error || 'AI Agent failed to process request'\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        960,
-        384
+        1872,
+        560
       ],
-      "id": "47b6d413-130e-4464-a46b-ad607e9cb2cb",
+      "id": "ac0cba9a-aaf4-459f-93d1-85f83d7d300d",
       "name": "Code in JavaScript1"
     },
     {
       "parameters": {
         "operation": "toJson",
-        "mode": "each",
-        "options": {
-          "format": false
-        }
+        "options": {}
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.2,
       "position": [
-        1184,
-        384
+        2096,
+        560
       ],
-      "id": "5fd2f72a-efe7-4c77-a08f-50ab52d59d4b",
+      "id": "b7452bb4-54ab-4a90-9da8-ac6692be9568",
       "name": "Convert to File1"
     },
     {
       "parameters": {
         "operation": "write",
         "fileName": "C:/Users/THE GOAT/.n8n-files/error_logs.json",
-        "options": {
-          "append": true
-        }
+        "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        1408,
-        384
+        2320,
+        560
       ],
-      "id": "5dce2203-32b9-4715-a3da-798d7b61e149",
+      "id": "6d45ceb3-6a03-4c4d-91db-891d0e3fbaa9",
       "name": "Read/Write Files from Disk1"
     },
     {
@@ -110,10 +248,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        1632,
-        384
+        2544,
+        560
       ],
-      "id": "90ccbb5f-6184-4f68-9b42-b5c806552c48",
+      "id": "2e258738-3408-4727-90cb-74bd7b67fe2a",
       "name": "Respond to Webhook3"
     },
     {
@@ -123,24 +261,24 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        744,
-        712
+        1680,
+        768
       ],
-      "id": "77158e6a-6a0a-4424-9d50-a2b70705c8ab",
+      "id": "20109fc3-0fc6-45f2-8a0b-8024e8b94dc3",
       "name": "Structured Output Parser"
     },
     {
       "parameters": {
-        "model": "qwen/qwen3.8-27b",
+        "model": "openai/gpt-oss-120b",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        624,
-        720
+        1520,
+        768
       ],
-      "id": "6df33c6c-910b-4c32-8908-651d3b586a67",
+      "id": "be8dccbb-2bcf-4c2a-a9cc-ab8d517c5f12",
       "name": "Groq Chat Model1",
       "credentials": {
         "groqApi": {
@@ -152,6 +290,90 @@
   ],
   "pinData": {},
   "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Webhook1": {
       "main": [
         [
@@ -237,18 +459,17 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "4135de69-c6bb-40c6-9197-224d2d4f5330",
+  "versionId": "4f717172-9862-4751-b313-9cff7e3c83b8",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "6657efbd1e5559e400a8793faa27c5f9bfc065b1707dd7dd80377be8968c176f"
   },
   "nodeGroups": [],
-  "id": "P22BXIQFOQQtZw24",
+  "id": "wgrlxBM0sCMcezdr",
   "tags": []
 }
